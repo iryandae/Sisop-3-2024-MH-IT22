@@ -130,6 +130,8 @@ int main(int argc, char *argv[]) {
                                                                     (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
                                                                     (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
                                                                     (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian");
+            } else if (strcmp(argv[1], "-kurang") == 0 && atoi(result) < 0) {
+                sprintf(log_message, "[%s] [KURANG] ERROR pada pengurangan.\n", timeString);
             } else {
                 sprintf(log_message, "[%s] [%s] Hasil %s dari %d dan %d adalah %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
                                                                     (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
