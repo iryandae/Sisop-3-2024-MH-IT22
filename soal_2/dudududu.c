@@ -125,19 +125,19 @@ int main(int argc, char *argv[]) {
             getTime(timeString);
             if (strcmp(result, "ERROR") == 0) {
                 sprintf(log_message, "[%s] [%s] ERROR pada %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
-                                                                   (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
-                                                                   (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
-                                                                   (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
-                                                                   (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
-                                                                   (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian");
+                                                                    (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
+                                                                    (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
+                                                                    (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
+                                                                    (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
+                                                                    (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian");
             } else {
                 sprintf(log_message, "[%s] [%s] Hasil %s dari %d dan %d adalah %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
-                                                                                         (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
-                                                                                         (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
-                                                                                         (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
-                                                                                         (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
-                                                                                         (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian",
-                                                                                         numbers[0], numbers[1], sentence);
+                                                                    (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
+                                                                    (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
+                                                                    (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
+                                                                    (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
+                                                                    (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian",
+                                                                    numbers[0], numbers[1], sentence);
             }
             fputs(log_message, fp);
             fclose(fp);
