@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <dirent.h>
-#include <string.h>
+#include<stdio.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+#include<dirent.h>
+#include<string.h>
 
 void findBest(char *filename,char *shm){
     FILE *file=fopen(filename,"r");
