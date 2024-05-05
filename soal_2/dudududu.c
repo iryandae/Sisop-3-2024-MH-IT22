@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h> // Library tambahan untuk waktu
 
 char *numbers[] = {"nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"};
 
@@ -60,6 +61,14 @@ void convertToWords(int number, char *result) {
     }
 }
 
+void getTime(char *timeString) {
+    time_t rawtime;
+    struct tm *timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(timeString, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2 || (strcmp(argv[1], "-kali") != 0 && strcmp(argv[1], "-tambah") != 0 && strcmp(argv[1], "-kurang") != 0 && strcmp(argv[1], "-bagi") != 0)) {
         printf("Usage: %s [operation]\n", argv[0]);
@@ -111,16 +120,18 @@ int main(int argc, char *argv[]) {
 
         FILE *fp = fopen("histori.log", "a");
         if (fp != NULL) {
-            char log_message[150];
+            char log_message[200];
+            char timeString[20];
+            getTime(timeString);
             if (strcmp(result, "ERROR") == 0) {
-                sprintf(log_message, "[%s] [%s] ERROR pada %s.\n", __DATE__, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
+                sprintf(log_message, "[%s] [%s] ERROR pada %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
                                                                    (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
                                                                    (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
                                                                    (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
                                                                    (strcmp(argv[1], "-tambah") == 0) ? "penjumlahan" :
                                                                    (strcmp(argv[1], "-kurang") == 0) ? "pengurangan" : "pembagian");
             } else {
-                sprintf(log_message, "[%s] [%s] Hasil %s dari %d dan %d adalah %s.\n", __DATE__, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
+                sprintf(log_message, "[%s] [%s] Hasil %s dari %d dan %d adalah %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
                                                                                          (strcmp(argv[1], "-tambah") == 0) ? "TAMBAH" :
                                                                                          (strcmp(argv[1], "-kurang") == 0) ? "KURANG" : "BAGI",
                                                                                          (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
