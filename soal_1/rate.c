@@ -10,7 +10,6 @@ void findBest(char *filename,char *shm){
         printf("Cannot open file: %s\n",filename);
         return;
     }
-
     char line[256];
     char bestLine[256];
     float bestRating=0.0;
