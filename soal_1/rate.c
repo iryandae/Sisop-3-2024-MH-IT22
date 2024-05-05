@@ -46,7 +46,7 @@ int main(){
                 if(strstr(dir->d_name,"parkinglot")!=NULL){
                 	printf("Type: Parking Lot\nFilename: %s\n\n--------------------------------\n\n%s",dir->d_name,shm);
 				}
-				if(strstr(dir->d_name,"trashcan")!=NULL){
+				else if(strstr(dir->d_name,"trashcan")!=NULL){
                 	printf("Type: Trash Can\nFilename: %s\n\n--------------------------------\n\n%s",dir->d_name,shm);
 				}
             }
