@@ -817,6 +817,7 @@ char *get_current_time(){
     return ctime(&now);
 }
 ```
+Buat fungsi untuk log, dengam format tanggal, tipe, dan pesan log. 
 ```c
 void write_to_log(const char *type, const char *message){
     FILE *fp;
@@ -838,6 +839,7 @@ void write_to_log(const char *type, const char *message){
     fclose(fp);
 }
 ```
+Fungsi untuk embaca isi file.
 ```c
 void read_myanimelist(struct Anime myanimelist[], int *count){
     FILE *fp;
@@ -858,6 +860,7 @@ void read_myanimelist(struct Anime myanimelist[], int *count){
     fclose(fp);
 }
 ```
+Selanjutnya untuk mengirimkan daftar isi (judul) pada file.
 ```c
 void send_all_titles(int sockfd, struct Anime myanimelist[], int count){
     char buffer[MAXLINE];
@@ -870,6 +873,7 @@ void send_all_titles(int sockfd, struct Anime myanimelist[], int count){
     send(sockfd, buffer, strlen(buffer), 0);
 }
 ```
+1. Berdasarkan genre,
 ```c
 void send_titles_by_genre(int sockfd, struct Anime myanimelist[], int count, char genre[]){
     char buffer[MAXLINE];
@@ -891,6 +895,7 @@ void send_titles_by_genre(int sockfd, struct Anime myanimelist[], int count, cha
     send(sockfd, buffer, strlen(buffer), 0);
 }
 ```
+2. Hari,
 ```c
 void send_titles_by_day(int sockfd, struct Anime myanimelist[], int count, char day[]){
     char buffer[MAXLINE];
@@ -912,6 +917,7 @@ void send_titles_by_day(int sockfd, struct Anime myanimelist[], int count, char 
     send(sockfd, buffer, strlen(buffer), 0);
 }
 ```
+3. Status.
 ```c
 void send_status(int sockfd, struct Anime myanimelist[], int count, char judul[]){
     char buffer[MAXLINE];
@@ -933,6 +939,7 @@ void send_status(int sockfd, struct Anime myanimelist[], int count, char judul[]
     send(sockfd, buffer, strlen(buffer), 0);
 }
 ```
+Buat fungsi 'add' untuk menambahkan anime ke dalam file myanimelist.csv.
 ```c
 void add_anime_to_file(struct Anime myanimelist[], int *count, char input[]){
     char hari[20], genre[20], judul[50], status[20];
@@ -957,6 +964,7 @@ void add_anime_to_file(struct Anime myanimelist[], int *count, char input[]){
     write_to_log("ADD", judul);
 }
 ```
+Fungsi untuk mengedit berdasarkan judul yang dipilih.
 ```c
 void edit_anime(struct Anime myanimelist[], int count, char input[]){
     char judul[50], hari[20], genre[20], status[20];
@@ -996,6 +1004,7 @@ void edit_anime(struct Anime myanimelist[], int count, char input[]){
     }
 }
 ```
+Menghapus anime, berdasarkan judul.
 ```c
 void delete_anime(struct Anime myanimelist[], int *count, char judul[]){
     int found = 0;
@@ -1033,6 +1042,7 @@ void delete_anime(struct Anime myanimelist[], int *count, char judul[]){
     write_to_log("DEL", judul);
 }
 ```
+Buat semua fungsi tadi pada ```main()```. Dengan pesan jika file ```myanimelist.csv``` tidak ditemukan, akan mengeluarkan pesan file tidak ditemukan, jika ada error pada konfigurasi file, maka akan dikeluarkan pesan kegagalan.
 ```c
 int main(){
     int server_fd, new_socket;
@@ -1088,7 +1098,9 @@ int main(){
             printf("Received : exit\n\n");
             break;
         }
-
+```
+Buat keyword perintah (tampilkan, genre, hari, status, add, edit, delete) untuk fungsi yang sudah dibuat.
+```c
         char command[10], temp[100];
         sscanf(buffer, "%s %[^\n]", command, temp);
 
@@ -1122,6 +1134,9 @@ int main(){
             delete_anime(myanimelist, &count, temp);
             send(new_socket, "Anime berhasil dihapus.\n", strlen("Anime berhasil dihapus.\n"), 0);
         }
+```
+Selain keyword tersebut, perintah akan invalid.
+```c
         else{
             send(new_socket, "Invalid Command\n", strlen("Invalid Command\n"), 0);
         }
@@ -1131,6 +1146,7 @@ int main(){
     return 0;
 }
 ```
+
 
 Keluar dari folder server, pada folder client, buat file ```client.c```
 ```c
@@ -1148,7 +1164,9 @@ int main(){
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[MAXLINE] = {0};
-
+```
+Buat socket.
+```c
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         printf("\n Socket creation error \n");
         return -1;
@@ -1156,7 +1174,9 @@ int main(){
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
-
+```
+Hubungnkan ke server.
+```c
     if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0){
         printf("\nInvalid address/ Address not supported \n");
         return -1;
@@ -1166,13 +1186,17 @@ int main(){
         printf("\nConnection Failed \n");
         return -1;
     }
-
+```
+Loop berakhir saat input ```exit```.
+```c
     while (1){
         printf("You : ");
         memset(buffer, 0, sizeof(buffer));
         fgets(buffer, sizeof(buffer), stdin);
         buffer[strcspn(buffer, "\n")] = '\0';
-
+```
+Mengirim pesan ke, dan menerima pesan balasan dari server.
+```c
         send(sock, buffer, strlen(buffer), 0);
 
         if (strcmp(buffer, "exit") == 0){
@@ -1189,3 +1213,15 @@ int main(){
     return 0;
 }
 ```
+##### Cara kerja:
+Kode ini bekerja dengan 2 terminal:
+1. Terminal dengan folder server ```./server``` yang akan berisi pesan yang telah dikirim.
+![WhatsApp Image 2024-05-11 at 17 30 57_8323cb19](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/dc37dcf0-892e-4b02-ab9a-a78124c062e2)
+2. Terminal dengan folder client ```./client``` akan menjadi tempat penulisan dan pengiriman pesan.
+![WhatsApp Image 2024-05-11 at 17 31 38_39dedc42](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/8a00d1a2-ca13-422a-8d2c-c45523bfe501)
+![WhatsApp Image 2024-05-11 at 17 32 01_d70ad563](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/ca8f3939-6b81-4da4-9fdc-4a8035883ca9)
+
+##### Error selama pengerjaan:
+![WhatsApp Image 2024-05-11 at 16 59 09_d730cb2e](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/74f2fed6-30bc-4169-8b29-0bf6f941a57a)
+![WhatsApp Image 2024-05-11 at 16 58 27_646aa4ee](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/9372fb91-c0b3-4c3f-9dd5-896e86f0b850)
+*setelah pesan diterima, server belum bisa menampilkan isi file.
