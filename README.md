@@ -173,6 +173,7 @@ int main(){
 }
 ```
 Berikut merupakan contoh hasil output dari file ```rate.c```
+
 ![Cuplikan layar 2024-05-10 132405](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/121481079/dcd948f1-0b64-430a-83d5-a00057136ca2)
 
 Pada file db.c program akan mengakses catatan waktu yang sudah dibuat oleh auth.c dan memprosesnya berdasarkan format yang diinginkan untuk kemudian disimpan di dalam file ```db.log```
