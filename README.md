@@ -939,7 +939,7 @@ void send_status(int sockfd, struct Anime myanimelist[], int count, char judul[]
     send(sockfd, buffer, strlen(buffer), 0);
 }
 ```
-Buat fungsi 'add' untuk menambahkan anime ke dalam file myanimelist.csv.
+Buat fungsi 'add' untuk menambahkan anime ke dalam file ```myanimelist.csv```.
 ```c
 void add_anime_to_file(struct Anime myanimelist[], int *count, char input[]){
     char hari[20], genre[20], judul[50], status[20];
