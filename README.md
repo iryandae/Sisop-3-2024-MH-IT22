@@ -333,7 +333,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 ```
-Parent process, program akan mengubah input menjadi angka dan melakukan operasi dari angka yang telah diubah, dari fungsi sebelumnya (convertToNumber).
+Parent process, program akan mengubah output menjadi angka dan melakukan operasi dari angka yang telah diubah, dari fungsi sebelumnya (convertToNumber).
 ```c
     if (pid > 0) { // Parent process
         close(pipe_parent_to_child[0]);
@@ -361,7 +361,7 @@ Parent process, program akan mengubah input menjadi angka dan melakukan operasi 
             char timeString[20];
             getTime(timeString);
 ```
-Membuat output, dan format pencatatan file histori.log.
+Membuat output format pencatatan file histori.log, yang akan menampilkan waktu, tanggal, dan aktivitas, serta pesan ERROR (jika ada).
 ```c
             if (strcmp(result, "ERROR") == 0) {
                 sprintf(log_message, "[%s] [%s] ERROR pada %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
