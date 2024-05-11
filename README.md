@@ -412,11 +412,11 @@ else { // Child process
     return 0;
 }
 ```
-Error di awal pengerjaan:
-```shell
-![WhatsApp Image 2024-05-05 at 15 08 32_dd225a5e](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/a99b4827-408b-4d3c-8b18-139863f83bd1)
-![WhatsApp Image 2024-05-05 at 14 58 50_1cdc6e46](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/74cdefb0-f221-4c31-9335-d3f4a5ac327d)
-```
+### Error di awal pengerjaan:
+#####
+[WhatsApp Image 2024-05-05 at 15 08 32_dd225a5e](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/a99b4827-408b-4d3c-8b18-139863f83bd1)
+[WhatsApp Image 2024-05-05 at 14 58 50_1cdc6e46](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/74cdefb0-f221-4c31-9335-d3f4a5ac327d)
+#####
 *output berupa angka
 
 ## Soal 3
