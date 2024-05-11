@@ -210,11 +210,11 @@ int main(){
 }
 ```
 ## Soal 2
-Buat folder untuk mempermudah
+Buat folder untuk mempermudah, jadi seluruh pengerjaan nomor ini dikerjakan di dalam folder ```max```, agar tidak tercampur dengan file lain.
 ```shell
 mkdir max && cd max
 ```
-Buat configurasi file dudududu.c
+Buat configurasi file dudududu.c ```(nano dudududu.c)```
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -775,7 +775,7 @@ dalam gambar ini output belum selesai diproses, namun saat demo tidak ada masala
 
 
 ## Soal 4
-Buat folder untuk mempermudah.
+Buat folder untuk mempermudah dan membatasi agar file tidak tercampur.
 ```shell
 mkdir lewis && cd lewis
 ```
@@ -785,9 +785,15 @@ mkdir server && mkdir client
 ```
 Download file ```myanimelist.csv``` setelah masuk dalam folder server.
 ```shell
+cd server
+```
+```shell
 wget --no-check-certificate "https://drive.google.com/uc?export=download&id=10p_kzuOgaFY3WT6FVPJIXFbkej2s9f50" -O myanimelist.csv
 ```
 Buat file ```server.c``` di dalam folder server.
+```shell
+nano server.c
+```
 ```c
 //server
 #include <stdio.h>
@@ -1149,6 +1155,9 @@ Selain keyword tersebut, perintah akan invalid.
 
 
 Keluar dari folder server, pada folder client, buat file ```client.c```
+```shell
+cd .. && cd client && nano client.c
+```
 ```c
 //client
 #include <stdio.h>
