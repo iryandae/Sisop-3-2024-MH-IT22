@@ -775,6 +775,15 @@ dalam gambar ini output belum selesai diproses, namun saat demo tidak ada masala
 
 
 ## Soal 4
+Buat folder untuk mempermudah.
+```shell
+mkdir lewis && cd lewis
+```
+Buat folder server (1) dan client (2) di dalam folder lewis untuk memisahkan, agar tidak terjadi error.
+```shell
+mkdir server && mkdir client
+```
+Buat file ```server.c``` di dalam folder server.
 ```c
 //server
 #include <stdio.h>
