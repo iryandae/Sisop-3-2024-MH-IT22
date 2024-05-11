@@ -756,8 +756,6 @@ int main(){
 
 #define PORT 8080
 #define MAXLINE 1024
-```
-```c
 int main(){
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
