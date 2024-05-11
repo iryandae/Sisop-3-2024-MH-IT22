@@ -336,6 +336,11 @@ int main(int argc, char *argv[]) {
         calculate(argv[1], numbers[0], numbers[1], result);
         write(pipe_parent_to_child[1], result, strlen(result) + 1);
 
+	close(pipe_parent_to_child[1]);
+	close(pipe_child_to_parent[0]);
+
+	wait(NULL);
+
         char sentence[100];
         read(pipe_child_to_parent[0], sentence, sizeof(sentence));
         printf("Hasil %s dari %d dan %d adalah %s.\n", (strcmp(argv[1], "-kali") == 0) ? "perkalian" :
