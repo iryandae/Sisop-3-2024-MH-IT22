@@ -361,6 +361,7 @@ Parent process, program akan mengubah input menjadi angka dan melakukan operasi 
             char timeString[20];
             getTime(timeString);
 ```
+Membuat output, dan format pencatatan file histori.log.
 ```c
             if (strcmp(result, "ERROR") == 0) {
                 sprintf(log_message, "[%s] [%s] ERROR pada %s.\n", timeString, (strcmp(argv[1], "-kali") == 0) ? "KALI" :
