@@ -223,9 +223,11 @@ Buat configurasi file dudududu.c
 #include <sys/wait.h>
 #include <time.h> // Library tambahan untuk waktu
 ```
+Mendefinisikan sesuai dengan perintah "kalkulator sederhana yang dapat menghitung peroperasian dari angka 1-9. 
 ```c
 char *numbers[] = {"nol", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan"};
 ```
+Mengubah kalimat/kata yang dimasukkan menjadi angka untuk dioperasikan.
 ```c
 void convertToNumber(char *input, int *result) {
     char *token = strtok(input, " ");
@@ -241,6 +243,7 @@ void convertToNumber(char *input, int *result) {
     }
 }
 ```
+Pengoperasian kalkulator, setelah kata (angka) yang dimasukkan diubah formatnya menjadi angka.
 ```c
 void calculate(char *operation, int a, int b, char *result) {
     int res;
@@ -260,6 +263,7 @@ void calculate(char *operation, int a, int b, char *result) {
     sprintf(result, "%d", res);
 }
 ```
+Mengubah angka yang didapat dari operasi kalkulator kembali menjadi kalimat/kata-kata.
 ```c
 void convertToWords(int number, char *result) {
     if (number < 0) {
@@ -283,6 +287,7 @@ void convertToWords(int number, char *result) {
     }
 }
 ```
+Tambahan untuk mencatat waktu yang akan dicatat dengan aktivitas lainnya dalam file histori.log.
 ```c
 void getTime(char *timeString) {
     time_t rawtime;
@@ -292,6 +297,7 @@ void getTime(char *timeString) {
     strftime(timeString, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
 }
 ```
+Fungsi main yang akan mengeluarkan 4 opsi jika pilihan (-operasi) belum disertakan.
 ```c
 int main(int argc, char *argv[]) {
     if (argc != 2 || (strcmp(argv[1], "-kali") != 0 && strcmp(argv[1], "-tambah") != 0 && strcmp(argv[1], "-kurang") != 0 && strcmp(argv[1], "-bagi") != 0)) {
@@ -327,6 +333,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 ```
+Parent process, program akan mengubah input menjadi angka dan melakukan operasi dari angka yang telah diubah, dari fungsi sebelumnya (convertToNumber).
 ```c
     if (pid > 0) { // Parent process
         close(pipe_parent_to_child[0]);
@@ -381,6 +388,7 @@ int main(int argc, char *argv[]) {
         close(pipe_child_to_parent[0]);
     }
 ```
+Melanjutkan, child process yang mengubah hasil angka dari parent process menjadi kalimat.
 ```c
 else { // Child process
         close(pipe_parent_to_child[1]);
@@ -403,6 +411,10 @@ else { // Child process
     return 0;
 }
 ```
+Error di awal pengerjaan:
+![WhatsApp Image 2024-05-05 at 15 08 32_dd225a5e](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/a99b4827-408b-4d3c-8b18-139863f83bd1)
+![WhatsApp Image 2024-05-05 at 14 58 50_1cdc6e46](https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/151121570/74cdefb0-f221-4c31-9335-d3f4a5ac327d)
+*output berupa angka
 
 ## Soal 3
 Pada file ``actions.c``
