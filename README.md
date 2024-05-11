@@ -753,6 +753,7 @@ Pesan dengan command dan info yang telah ditentukan diapit oleh kurung siku, kem
 Berikut adalah output dari program :
 
 <img width="738" alt="Screenshot 2024-05-11 at 15 28 16" src="https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/150358232/21b97b68-d5b8-4556-b8e3-f1516bc1b3f5">
+
 dalam gambar ini output belum selesai diproses, namun saat demo tidak ada masalah, program dapat berhasil menampilkan output yang diharapkan.
 
 
