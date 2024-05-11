@@ -400,6 +400,360 @@ else { // Child process
 ```
 
 ## Soal 3
+Pada file ``actions.c``
+
+`check_gap(float gap)`: Fungsi ini memeriksa jarak antara mobil pengguna dengan mobil di depannya dalam balapan, yang diwakili oleh parameter `gap`. Rentang output fungsi ini adalah sebagai berikut:
+   - Jika `gap` < 3.5, fungsi akan mengembalikan string "Gogogo"
+   - Jika `gap` berada dalam rentang 3.5-10, fungsi akan mengembalikan string "Push"
+   - Jika `gap` > 10, fungsi akan mengembalikan string "Stay out of trouble"
+
+`check_fuel(float fuel)`: Fungsi ini memeriksa tingkat bahan bakar dalam tangki mobil, yang diwakili oleh parameter `fuel`. Rentang output fungsi ini adalah sebagai berikut:
+   - Jika `fuel` >80%, fungsi akan mengembalikan string "Push Push Push"
+   - Jika `fuel` berada dalam rentang 50% - 80%, fungsi akan mengembalikan string "You can go"
+   - Jika `fuel` kurang dari 50%, fungsi akan mengembalikan string "Conserve Fuel"
+
+`check_tire(int tire)`: Fungsi ini memeriksa keausan ban mobil, yang diwakili oleh parameter `tire`. Rentang output fungsi ini adalah sebagai berikut:
+   - Jika `tire` > 80%, fungsi akan mengembalikan string "Go Push Go Push"
+   - Jika `tire` berada dalam rentang 50% - 80%, fungsi akan mengembalikan string "Good Tire Wear"
+   - Jika `tire` berada dalam rentang 30% - 50%, fungsi akan mengembalikan string "Conserve Your Tire"
+   - Jika `tire` kurang dari 30%, fungsi akan mengembalikan string "Box Box Box"
+
+`check_tire_change(const char* tire_type)`: Fungsi ini memeriksa tipe ban saat ini yang digunakan oleh mobil, yang diwakili oleh parameter `tire_type`. Rentang output fungsi ini adalah sebagai berikut:
+   - Jika tipe ban adalah "Soft", fungsi akan mengembalikan string "Mediums Ready"
+   - Jika tipe ban adalah "Medium", fungsi akan mengembalikan string "Box for Softs"
+   - Jika tipe ban tidak dikenali, fungsi akan mengembalikan string "Invalid tire type"
+```c
+#include <stdio.h>
+#include <string.h>
+#include "actions.h"
+
+const char* check_gap(float gap) {
+    if (gap < 3.5) {
+        return "Gogogo";
+    } else if (gap <= 10) {
+        return "Push";
+    } else {
+        return "Stay out of trouble";
+    }
+}
+
+const char* check_fuel(float fuel) {
+    if (fuel > 80) {
+        return "Push Push Push";
+    } else if (fuel >= 50) {
+        return "You can go";
+    } else {
+        return "Conserve Fuel";
+    }
+}
+
+const char* check_tire(int tire) {
+    if (tire > 80) {
+        return "Go Push Go Push";
+    } else if (tire > 50) {
+        return "Good Tire Wear";
+    } else if (tire > 30) {
+        return "Conserve Your Tire";
+    } else {
+        return "Box Box Box";
+    }
+}
+
+const char* check_tire_change(const char* tire_type) {
+    if (strcmp(tire_type, "Soft") == 0) {
+        return "Mediums Ready";
+    } else if (strcmp(tire_type, "Medium") == 0) {
+        return "Box for Softs";
+    } else {
+        return "Invalid tire type";
+    }
+}
+```
+
+Pada bagian file``paddock.c``.
+Deklarasikan library yang akan digunakan.
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <time.h>
+#include <sys/stat.h>
+#include "actions.h"
+```
+
+Definisikan port server yang akan digunakan dan log file yang akan digunakan.
+```c
+#define PORT 8080
+#define LOGFILE "race.log"
+
+FILE *log_file;
+```
+
+Catat pesan ke file log dengan format sumber pesan, waktu, perintah, dan informasi terkait.
+```c
+void log_message(const char *source, const char *command, const char *info) {
+    time_t now;
+    time(&now);
+    struct tm *timeinfo = localtime(&now);
+    char time_str[20];  // Buffer to hold the timestamp string
+
+    // Format the time in the buffer
+    strftime(time_str, sizeof(time_str), "%d/%m/%Y %H:%M:%S", timeinfo);
+
+    fprintf(log_file, "[%s] [%s]: [%s] [%s]\n", source, time_str, command, info);
+    fflush(log_file);
+}
+```
+
+Proses pesan yang diterima dari driver(menerima ``command`` dan ``info``), memanggil fungsi yang sesuai dari file "actions.h", dan mengirimkan respons kembali ke driver melalui socket.
+```c
+void process_driver_message(int sock, const char* command, const char* info) {
+    const char *response;
+    if (strcmp(command, "Gap") == 0) {
+        float gap = atof(info);
+        response = check_gap(gap);
+    } else if (strcmp(command, "Fuel") == 0) {
+        float fuel = atof(info);
+        response = check_fuel(fuel);
+    } else if (strcmp(command, "Tire") == 0) {
+        int tire = atoi(info);
+        response = check_tire(tire);
+    } else if (strcmp(command, "Tire Change") == 0) {
+        response = check_tire_change(info);
+    } else {
+        response = "Invalid command";
+    }
+
+    time_t now;
+    time(&now);
+    struct tm *timeinfo = localtime(&now);
+    char time_str[20];  // Buffer to hold the timestamp string
+    strftime(time_str, sizeof(time_str), "%d/%m/%Y %H:%M:%S", timeinfo);
+
+    char buffer[2048] = {0};
+    sprintf(buffer, "[%s] [%s]: [%s] [%s]\n", "Paddock", time_str, command, response);  // Replace "time" with the current time
+    send(sock, buffer, strlen(buffer), 0);
+}
+```
+
+Inisialisasikan server socket, membuat socket, mengikatnya ke alamat dan port tertentu, mendengarkan koneksi, dan kemudian menerima dan memproses pesan dari klien. keluar dan print pesan error jika gagal.
+```c
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+
+    log_file = fopen(LOGFILE, "a");
+    if (log_file == NULL) {
+        perror("Failed to open log file");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server_fd, 3) < 0) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
+    }
+```
+
+Fork proses sehingga proses anak akan menerima koneksi dan menjalankan tugasnya, sementara proses induk akan keluar, membiarkan proses anak berjalan sebagai daemon.
+```c
+// Fork off the parent process
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // If we got a good PID, then we can exit the parent process
+    if (pid > 0) {
+        exit(EXIT_SUCCESS);
+    }
+```
+
+Setelah melakukan fork, proses anak mengatur ulang beberapa pengaturan sistem seperti mask file mode, SID (Session ID), dan direktori kerja saat ini sehingga proses anak berjalan sebagai daemon terpisah.
+```c
+   // Change the file mode mask
+    umask(0);
+
+    // Create a new SID for the child process
+    pid_t sid = setsid();
+    if (sid < 0) {
+        perror("setsid failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Change the current working directory
+    if ((chdir("/")) < 0) {
+        perror("chdir failed");
+        exit(EXIT_FAILURE);
+    }
+```
+
+Tutup file deskriptor standar.
+```c
+// Close out the standard file descriptors
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+```
+
+Server menerima koneksi baru dari klien menggunakan accept(), kemudian membaca perintah dan informasi yang dikirimkan oleh klien melalui socket. Command dan info dibaca dari socket, lalu di-parse untuk menghapus kurung siku, kemudian dicatat ke dalam file log, dan diproses menggunakan fungsi `process_driver_message`.
+```c
+while (1) {
+        if ((new_socket = accept(server_fd, (struct sockaddr )&address, (socklen_t)&addrlen)) < 0) {
+            perror("Accept failed");
+            continue;
+        }
+
+        char command[1024] = {0};
+        char info[1024] = {0};
+
+        // Baca perintah dari socket
+        int bytes_read = read(new_socket, command, sizeof(command));
+        if (bytes_read < 0) {
+            perror("Read command failed");
+            close(new_socket);
+            continue;
+        }
+
+        // Hapus kurung siku dari perintah
+        sscanf(command, "[%[^]]]", command);
+
+        // Baca info dari socket
+        bytes_read = read(new_socket, info, sizeof(info));
+        if (bytes_read < 0) {
+            perror("Read info failed");
+            close(new_socket);
+            continue;
+        }
+
+        // Hapus kurung siku dari info
+        sscanf(info, "[%[^]]]", info);
+
+        log_message("Driver", command, info);
+        process_driver_message(new_socket, command, info);
+    }
+
+    return 0;
+}
+```
+
+Pada bagian ``driver.c``
+Deklarasikan library yang akan digunakan.
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+```
+
+Definiskan port yang akan digunakan dan ukuran buffer yang dibutuhkan.
+```c
+#define PORT 8080
+#define BUFFER_SIZE 1024
+```
+
+Deklarasikan variabel struct sockaddr_in yang digunakan untuk menyimpan alamat server dan klien, variabel sock yang digunakan untuk menampung file descriptor dari socket yang dibuat, variabel valread untuk menyimpan nilai yang dibaca dari socket, dan array buffer yang digunakan untuk menyimpan data yang diterima dari server.
+```c
+int main(int argc, char *argv[]) {
+    struct sockaddr_in address;
+    int sock = 0, valread;
+    struct sockaddr_in serv_addr;
+    char buffer[BUFFER_SIZE] = {0};
+```
+
+Membuat socket dengan menggunakan fungsi socket(). Jika pembuatan socket gagal, pesan kesalahan akan dicetak dan program akan keluar dengan nilai `-1`.
+```c
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+```
+
+Tentukan alamat server dalam struktur serv_addr.
+```c
+    memset(&serv_addr, '0', sizeof(serv_addr));
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) {
+        printf("\nInvalid address/ Address not supported \n");
+        return -1;
+    }
+```
+
+Gunakan fungsi connect() untuk menghubungkan ke server. Jika koneksi gagal, pesan kesalahan akan dicetak dan program akan keluar dengan nilai `-1`.
+```c
+ if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        printf("\nConnection Failed \n");
+        return -1;
+    }
+```
+Program membaca argumen baris perintah untuk menentukan command (`-c`) dan info (`-i`) yang akan dikirim ke server. Argumen baris perintah diproses dengan menggunakan loop `for` untuk memeriksa setiap argumen.
+```c
+    char *command = NULL;
+    char *info = NULL;
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
+            command = argv[i + 1];
+            i++;  // Skip the next argument
+        } else if (strcmp(argv[i], "-i") == 0 && i + 1 < argc) {
+            info = argv[i + 1];
+            i++;  // Skip the next argument
+        }
+    }
+```
+
+Pesan dengan command dan info yang telah ditentukan diapit oleh kurung siku, kemudian dikirim ke server menggunakan fungsi send(). Program mencetak pesan yang dikirim ke server. Program menerima pesan balasan dari server menggunakan fungsi read() dan mencetaknya di layar. Setelah semua proses selesai, program mengembalikan nilai 0 sebagai penanda bahwa program berjalan dengan sukses.
+```c
+    // Membuat pesan dengan perintah dan info diapit oleh kurung siku
+    char command_message[2048] = {0};
+    sprintf(command_message, "[%s]", command);
+    send(sock , command_message , strlen(command_message) , 0 );
+
+    char info_message[2048] = {0};
+    sprintf(info_message, "[%s]", info);
+    send(sock , info_message , strlen(info_message) , 0 );
+
+    printf("Command sent: %s %s\n", command_message, info_message);
+
+    valread = read(sock , buffer, BUFFER_SIZE);
+    printf("Received message: %s\n", buffer);
+
+    return 0;
+}
+
+```
+Berikut adalah output dari program :
+<img width="738" alt="Screenshot 2024-05-11 at 15 28 16" src="https://github.com/iryandae/Sisop-3-2024-MH-IT22/assets/150358232/21b97b68-d5b8-4556-b8e3-f1516bc1b3f5">
+dalam gambar ini output belum selesai diproses, namun saat demo tidak ada masalah, program dapat berhasil menampilkan output yang diharapkan.
+
 
 ## Soal 4
 ```c
