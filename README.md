@@ -783,6 +783,10 @@ Buat folder server (1) dan client (2) di dalam folder lewis untuk memisahkan, ag
 ```shell
 mkdir server && mkdir client
 ```
+Download file ```myanimelist.csv``` setelah masuk dalam folder server.
+```shell
+wget --no-check-certificate "https://drive.google.com/uc?export=download&id=10p_kzuOgaFY3WT6FVPJIXFbkej2s9f50" -O myanimelist.csv
+```
 Buat file ```server.c``` di dalam folder server.
 ```c
 //server
@@ -1127,6 +1131,8 @@ int main(){
     return 0;
 }
 ```
+
+Keluar dari folder server, pada folder client, buat file ```client.c```
 ```c
 //client
 #include <stdio.h>
